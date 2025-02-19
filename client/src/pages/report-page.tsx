@@ -26,15 +26,31 @@ export default function ReportPage() {
     );
   }
 
-  if (!scan) {
+  // Handle error case
+  if (!scan || error) {
+    let errorMessage = "An unknown error occurred";
+
+    // Try to extract error message from the response
+    if (error instanceof Error) {
+      try {
+        const match = error.message.match(/\{.*\}/);
+        if (match) {
+          const errorObj = JSON.parse(match[0]);
+          errorMessage = errorObj.error;
+        } else {
+          errorMessage = error.message;
+        }
+      } catch {
+        errorMessage = error.message;
+      }
+    }
+
     return (
       <div className="min-h-screen flex items-center justify-center p-4">
         <Alert variant="destructive" className="w-full max-w-md">
           <AlertTriangle className="h-4 w-4" />
           <AlertTitle>Error</AlertTitle>
-          <AlertDescription>
-            {error?.message || "Scan not found"}
-          </AlertDescription>
+          <AlertDescription>{errorMessage}</AlertDescription>
         </Alert>
       </div>
     );
