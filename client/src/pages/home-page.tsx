@@ -55,7 +55,7 @@ export default function HomePage() {
                       <div className="flex items-center justify-between mb-2">
                         <span className="font-medium truncate">{scan.url}</span>
                         <span className="text-sm text-muted-foreground">
-                          {new Date(scan.createdAt!).toLocaleDateString()}
+                          {new Date(scan.createdAt!).toLocaleString()}
                         </span>
                       </div>
                       <div className="flex items-center gap-2">
