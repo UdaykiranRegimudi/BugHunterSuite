@@ -4,29 +4,39 @@ import { setupAuth } from "./auth";
 import { storage } from "./storage";
 import { insertScanSchema, urlSchema } from "@shared/schema";
 
-function mockSecurityCheck(url: string) {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve({
-        ssl: {
-          valid: Math.random() > 0.3,
-          issues: Math.random() > 0.7 ? ["Outdated SSL version"] : [],
-        },
-        headers: {
-          secure: Math.random() > 0.4,
-          missing: Math.random() > 0.6 ? ["X-Frame-Options"] : [],
-        },
-        xss: {
-          vulnerable: Math.random() > 0.8,
-          endpoints: Math.random() > 0.7 ? ["/search", "/comment"] : [],
-        },
-        sql: {
-          vulnerable: Math.random() > 0.9,
-          endpoints: Math.random() > 0.8 ? ["/login"] : [],
-        }
-      });
-    }, 2000);
-  });
+async function mockSecurityCheck(url: string, updateProgress: (progress: number) => void) {
+  const steps = [
+    { name: 'SSL Check', weight: 25 },
+    { name: 'Headers Check', weight: 25 },
+    { name: 'XSS Check', weight: 25 },
+    { name: 'SQL Injection Check', weight: 25 }
+  ];
+
+  let currentProgress = 0;
+  for (const step of steps) {
+    await new Promise(resolve => setTimeout(resolve, 500)); // Simulate work
+    currentProgress += step.weight;
+    updateProgress(currentProgress);
+  }
+
+  return {
+    ssl: {
+      valid: Math.random() > 0.3,
+      issues: Math.random() > 0.7 ? ["Outdated SSL version"] : [],
+    },
+    headers: {
+      secure: Math.random() > 0.4,
+      missing: Math.random() > 0.6 ? ["X-Frame-Options"] : [],
+    },
+    xss: {
+      vulnerable: Math.random() > 0.8,
+      endpoints: Math.random() > 0.7 ? ["/search", "/comment"] : [],
+    },
+    sql: {
+      vulnerable: Math.random() > 0.9,
+      endpoints: Math.random() > 0.8 ? ["/login"] : [],
+    }
+  };
 }
 
 export async function registerRoutes(app: Express): Promise<Server> {
@@ -34,18 +44,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post("/api/scans", async (req, res) => {
     if (!req.isAuthenticated()) return res.sendStatus(401);
-    
+
     try {
       const data = insertScanSchema.parse(req.body);
       urlSchema.parse(data.url);
-      
+
       const scan = await storage.createScan(req.user!.id, data);
-      
-      // Start mock security check
-      mockSecurityCheck(data.url).then(results => {
+
+      // Start mock security check with progress updates
+      mockSecurityCheck(data.url, async (progress) => {
+        await storage.updateScanProgress(scan.id, progress);
+      }).then(results => {
         storage.updateScanResults(scan.id, results);
       });
-      
+
       res.status(201).json(scan);
     } catch (error) {
       res.status(400).json({ error: String(error) });

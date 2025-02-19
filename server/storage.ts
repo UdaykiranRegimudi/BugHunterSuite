@@ -13,6 +13,7 @@ export interface IStorage {
   getScan(id: number): Promise<Scan | undefined>;
   getUserScans(userId: number): Promise<Scan[]>;
   updateScanResults(id: number, results: any): Promise<void>;
+  updateScanProgress(id: number, progress: number): Promise<void>;
   sessionStore: session.Store;
 }
 
@@ -56,7 +57,8 @@ export class MemStorage implements IStorage {
       id,
       userId,
       ...scan,
-      status: 'pending',
+      status: 'running',
+      progress: 0,
       results: null,
       createdAt: new Date(),
     };
@@ -77,7 +79,14 @@ export class MemStorage implements IStorage {
   async updateScanResults(id: number, results: any): Promise<void> {
     const scan = await this.getScan(id);
     if (scan) {
-      this.scans.set(id, { ...scan, status: 'completed', results });
+      this.scans.set(id, { ...scan, status: 'completed', progress: 100, results });
+    }
+  }
+
+  async updateScanProgress(id: number, progress: number): Promise<void> {
+    const scan = await this.getScan(id);
+    if (scan) {
+      this.scans.set(id, { ...scan, progress });
     }
   }
 }

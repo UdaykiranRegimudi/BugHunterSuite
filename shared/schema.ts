@@ -13,6 +13,7 @@ export const scans = pgTable("scans", {
   userId: integer("user_id").notNull(),
   url: text("url").notNull(),
   status: text("status").notNull(), // 'pending', 'running', 'completed', 'failed'
+  progress: integer("progress").default(0), // 0-100 percentage
   results: jsonb("results"),
   createdAt: timestamp("created_at").defaultNow(),
 });

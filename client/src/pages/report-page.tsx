@@ -4,6 +4,7 @@ import { Scan } from "@shared/schema";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Progress } from "@/components/ui/progress";
 import { Shield, AlertTriangle, Check, X, Loader2, ArrowLeft } from "lucide-react";
 import { Link } from "wouter";
 
@@ -11,6 +12,10 @@ export default function ReportPage() {
   const params = useParams<{ id: string }>();
   const { data: scan, isLoading } = useQuery<Scan>({
     queryKey: [`/api/scans/${params.id}`],
+    refetchInterval: (data) => 
+      data && (data.status === 'completed' || data.status === 'failed') 
+        ? false 
+        : 1000, // Poll every second while scan is running
   });
 
   if (isLoading) {
@@ -57,11 +62,17 @@ export default function ReportPage() {
           </p>
         </div>
 
-        {scan.status === "pending" ? (
+        {scan.status === "running" || scan.status === "pending" ? (
           <Card>
-            <CardContent className="p-8 text-center">
-              <Loader2 className="h-8 w-8 animate-spin mx-auto mb-4 text-muted-foreground" />
-              <p>Scan in progress...</p>
+            <CardContent className="p-8">
+              <div className="text-center mb-4">
+                <Loader2 className="h-8 w-8 animate-spin mx-auto mb-4 text-muted-foreground" />
+                <p className="mb-4">Scan in progress...</p>
+              </div>
+              <Progress value={scan.progress} className="w-full" />
+              <p className="text-sm text-muted-foreground text-center mt-2">
+                {scan.progress}% complete
+              </p>
             </CardContent>
           </Card>
         ) : scan.status === "completed" && results ? (
