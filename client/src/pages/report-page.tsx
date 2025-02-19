@@ -9,9 +9,11 @@ import { Shield, AlertTriangle, Check, X, Loader2, ArrowLeft } from "lucide-reac
 import { Link } from "wouter";
 
 export default function ReportPage() {
-  const params = useParams<{ id: string }>();
+  const { id } = useParams<{ id: string }>(); // Ensure this line is correct
+  console.log(id)
+
   const { data: scan, isLoading, error } = useQuery<Scan>({
-    queryKey: [`/api/scans/${params.id}`],
+    queryKey: [`/api/scans/${id}`], // Use the `id` from useParams
     refetchInterval: (data) =>
       data && (data.status === "completed" || data.status === "failed")
         ? false

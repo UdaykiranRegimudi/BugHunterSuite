@@ -61,6 +61,15 @@ export default function AuthPage() {
           <li>• HTTP header analysis</li>
           <li>• XSS vulnerability detection</li>
           <li>• SQL injection testing</li>
+          <li>• Access control testing</li>
+          <li>• Cryptography vulnerabilities detection</li>
+          <li>• Insecure design vulnerabilities testing</li>
+          <li>• Security config vulnerabilities testing</li>
+          <li>• Vulnerable components detection</li>
+          <li>• Authentication vulnerabilities testing</li>
+          <li>• Integrity failures</li>
+          <li>• Logging vulnerabilities testing</li>
+          <li>• SSRF vulnerabilities testing</li>
         </ul>
       </div>
     </div>
