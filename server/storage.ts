@@ -71,15 +71,20 @@ export class MemStorage implements IStorage {
   }
 
   async getUserScans(userId: number): Promise<Scan[]> {
-    return Array.from(this.scans.values()).filter(
-      (scan) => scan.userId === userId,
-    );
+    return Array.from(this.scans.values())
+      .filter((scan) => scan.userId === userId)
+      .sort((a, b) => (b.createdAt?.getTime() || 0) - (a.createdAt?.getTime() || 0));
   }
 
   async updateScanResults(id: number, results: any): Promise<void> {
     const scan = await this.getScan(id);
     if (scan) {
-      this.scans.set(id, { ...scan, status: 'completed', progress: 100, results });
+      this.scans.set(id, { 
+        ...scan, 
+        status: 'completed', 
+        progress: 100, 
+        results 
+      });
     }
   }
 

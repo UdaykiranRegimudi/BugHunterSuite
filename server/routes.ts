@@ -3,41 +3,7 @@ import { createServer, type Server } from "http";
 import { setupAuth } from "./auth";
 import { storage } from "./storage";
 import { insertScanSchema, urlSchema } from "@shared/schema";
-
-async function mockSecurityCheck(url: string, updateProgress: (progress: number) => void) {
-  const steps = [
-    { name: 'SSL Check', weight: 25 },
-    { name: 'Headers Check', weight: 25 },
-    { name: 'XSS Check', weight: 25 },
-    { name: 'SQL Injection Check', weight: 25 }
-  ];
-
-  let currentProgress = 0;
-  for (const step of steps) {
-    await new Promise(resolve => setTimeout(resolve, 500)); // Simulate work
-    currentProgress += step.weight;
-    updateProgress(currentProgress);
-  }
-
-  return {
-    ssl: {
-      valid: Math.random() > 0.3,
-      issues: Math.random() > 0.7 ? ["Outdated SSL version"] : [],
-    },
-    headers: {
-      secure: Math.random() > 0.4,
-      missing: Math.random() > 0.6 ? ["X-Frame-Options"] : [],
-    },
-    xss: {
-      vulnerable: Math.random() > 0.8,
-      endpoints: Math.random() > 0.7 ? ["/search", "/comment"] : [],
-    },
-    sql: {
-      vulnerable: Math.random() > 0.9,
-      endpoints: Math.random() > 0.8 ? ["/login"] : [],
-    }
-  };
-}
+import { performSecurityCheck } from "./security-scanner";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   setupAuth(app);
@@ -51,11 +17,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       const scan = await storage.createScan(req.user!.id, data);
 
-      // Start mock security check with progress updates
-      mockSecurityCheck(data.url, async (progress) => {
+      // Start security check with progress updates
+      performSecurityCheck(data.url, async (progress) => {
         await storage.updateScanProgress(scan.id, progress);
-      }).then(results => {
-        storage.updateScanResults(scan.id, results);
+      }).then(async (results) => {
+        await storage.updateScanResults(scan.id, results);
+      }).catch(async (error) => {
+        const scan = await storage.getScan(scan.id);
+        if (scan) {
+          await storage.updateScanResults(scan.id, {
+            error: error.message,
+            ssl: { valid: false, issues: [error.message] },
+            headers: { secure: false, missing: [] },
+            xss: { vulnerable: false, endpoints: [] },
+            sql: { vulnerable: false, endpoints: [] }
+          });
+        }
       });
 
       res.status(201).json(scan);
