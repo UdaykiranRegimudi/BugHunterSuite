@@ -10,7 +10,7 @@ import { Link } from "wouter";
 
 export default function ReportPage() {
   const params = useParams<{ id: string }>();
-  const { data: scan, isLoading } = useQuery<Scan>({
+  const { data: scan, isLoading, error } = useQuery<Scan>({
     queryKey: [`/api/scans/${params.id}`],
     refetchInterval: (data) => 
       data && (data.status === 'completed' || data.status === 'failed') 
@@ -32,7 +32,9 @@ export default function ReportPage() {
         <Alert variant="destructive" className="w-full max-w-md">
           <AlertTriangle className="h-4 w-4" />
           <AlertTitle>Error</AlertTitle>
-          <AlertDescription>Scan not found</AlertDescription>
+          <AlertDescription>
+            {error?.message || "Scan not found"}
+          </AlertDescription>
         </Alert>
       </div>
     );
@@ -62,7 +64,7 @@ export default function ReportPage() {
           </p>
         </div>
 
-        {scan.status === "running" || scan.status === "pending" ? (
+        {scan.status === "running" ? (
           <Card>
             <CardContent className="p-8">
               <div className="text-center mb-4">
@@ -77,6 +79,7 @@ export default function ReportPage() {
           </Card>
         ) : scan.status === "completed" && results ? (
           <div className="grid md:grid-cols-2 gap-8">
+            {/* SSL/TLS Security */}
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
@@ -112,6 +115,7 @@ export default function ReportPage() {
               </CardContent>
             </Card>
 
+            {/* HTTP Headers */}
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
@@ -147,6 +151,7 @@ export default function ReportPage() {
               </CardContent>
             </Card>
 
+            {/* XSS Vulnerabilities */}
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
@@ -182,6 +187,7 @@ export default function ReportPage() {
               </CardContent>
             </Card>
 
+            {/* SQL Injection */}
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">

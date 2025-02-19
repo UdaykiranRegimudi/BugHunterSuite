@@ -10,6 +10,7 @@ export default function HomePage() {
   const { user, logoutMutation } = useAuth();
   const { data: scans, isLoading } = useQuery<Scan[]>({
     queryKey: ["/api/scans"],
+    refetchInterval: 1000, // Poll every second to get updates
   });
 
   return (
@@ -69,6 +70,7 @@ export default function HomePage() {
                           }`}
                         >
                           {scan.status}
+                          {scan.status === "running" && ` (${scan.progress}%)`}
                         </span>
                       </div>
                     </div>
