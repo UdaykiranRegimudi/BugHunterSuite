@@ -51,7 +51,7 @@ export default function HomePage() {
             ) : scans && scans.length > 0 ? (
               <div className="space-y-4">
                 {scans.map((scan) => (
-                  <Link key={scan.id} href={`/report/${scan.id}`}>
+                  <Link key={scan.id} to={`/report/${scan.id}`}>
                     <div className="block p-4 rounded-lg border bg-card hover:bg-accent transition-colors cursor-pointer">
                       <div className="flex items-center justify-between mb-2">
                         <span className="font-medium truncate">{scan.url}</span>
