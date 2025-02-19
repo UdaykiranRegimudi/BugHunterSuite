@@ -1,6 +1,6 @@
 # BugHunterSuite
 
-![BugHunterSuite](bughunter_suite_banner.png)
+![BugHunterSuite](assests/pic1.png)
 
 **BugHunterSuite** is a powerful website security testing suite designed to detect vulnerabilities in web applications. It helps identify critical security flaws such as Broken Access Control, Injection Attacks, Authentication Failures, and more. 
 
@@ -22,13 +22,16 @@ BugHunterSuite can test websites for the following vulnerabilities:
 ## Screenshots
 
 ### Home Page
-![Home](home.png)
+![Home](assests/pic2.png)
 
 ### Authentication Page
-![Auth](auth.png)
+![Auth](assests/pic1.png)
 
 ### Reports Page
-![Reports](reports.png)
+![Progress](assests/pic3.png)
+![Reports](assests/pic4.png)
+![Reports](assests/pic5.png)
+![Reports](assests/pic6.png)
 
 ## Installation
 
