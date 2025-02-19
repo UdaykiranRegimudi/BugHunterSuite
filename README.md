@@ -40,14 +40,6 @@ git clone https://github.com/UdaykiranRegimudi/BugHunterSuite.git
 cd BugHunterSuite
 ```
 
-## Usage
-
-Run the tool to start scanning a website:
-
-```bash
-python bughunter.py --url https://example.com
-```
-
 ## Contributing
 
 Contributions are welcome! Feel free to submit issues or pull requests.
