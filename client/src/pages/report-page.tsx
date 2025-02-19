@@ -12,9 +12,9 @@ export default function ReportPage() {
   const params = useParams<{ id: string }>();
   const { data: scan, isLoading, error } = useQuery<Scan>({
     queryKey: [`/api/scans/${params.id}`],
-    refetchInterval: (data) => 
-      data && (data.status === 'completed' || data.status === 'failed') 
-        ? false 
+    refetchInterval: (data) =>
+      data && (data.status === "completed" || data.status === "failed")
+        ? false
         : 1000, // Poll every second while scan is running
   });
 
@@ -26,22 +26,19 @@ export default function ReportPage() {
     );
   }
 
-  // Handle error case
   if (!scan || error) {
-    let errorMessage = "An unknown error occurred";
+    let errorMessage = "Unknown error";
 
-    // Try to extract error message from the response
     if (error instanceof Error) {
-      try {
-        const match = error.message.match(/\{.*\}/);
-        if (match) {
+      // Simplify error message display
+      const match = error.message.match(/\{.*?\}/);
+      if (match) {
+        try {
           const errorObj = JSON.parse(match[0]);
           errorMessage = errorObj.error;
-        } else {
+        } catch {
           errorMessage = error.message;
         }
-      } catch {
-        errorMessage = error.message;
       }
     }
 
@@ -50,7 +47,9 @@ export default function ReportPage() {
         <Alert variant="destructive" className="w-full max-w-md">
           <AlertTriangle className="h-4 w-4" />
           <AlertTitle>Error</AlertTitle>
-          <AlertDescription>{errorMessage}</AlertDescription>
+          <AlertDescription>
+            {errorMessage}
+          </AlertDescription>
         </Alert>
       </div>
     );
@@ -152,18 +151,19 @@ export default function ReportPage() {
                       : "Missing security headers"}
                   </span>
                 </div>
-                {results.headers.missing && results.headers.missing.length > 0 && (
-                  <Alert variant="destructive">
-                    <AlertTitle>Missing Headers</AlertTitle>
-                    <AlertDescription>
-                      <ul className="list-disc pl-4 mt-2">
-                        {results.headers.missing.map((header: string) => (
-                          <li key={header}>{header}</li>
-                        ))}
-                      </ul>
-                    </AlertDescription>
-                  </Alert>
-                )}
+                {results.headers.missing &&
+                  results.headers.missing.length > 0 && (
+                    <Alert variant="destructive">
+                      <AlertTitle>Missing Headers</AlertTitle>
+                      <AlertDescription>
+                        <ul className="list-disc pl-4 mt-2">
+                          {results.headers.missing.map((header: string) => (
+                            <li key={header}>{header}</li>
+                          ))}
+                        </ul>
+                      </AlertDescription>
+                    </Alert>
+                  )}
               </CardContent>
             </Card>
 
@@ -188,18 +188,19 @@ export default function ReportPage() {
                       : "XSS vulnerabilities found"}
                   </span>
                 </div>
-                {results.xss.endpoints && results.xss.endpoints.length > 0 && (
-                  <Alert variant="destructive">
-                    <AlertTitle>Vulnerable Endpoints</AlertTitle>
-                    <AlertDescription>
-                      <ul className="list-disc pl-4 mt-2">
-                        {results.xss.endpoints.map((endpoint: string) => (
-                          <li key={endpoint}>{endpoint}</li>
-                        ))}
-                      </ul>
-                    </AlertDescription>
-                  </Alert>
-                )}
+                {results.xss.endpoints &&
+                  results.xss.endpoints.length > 0 && (
+                    <Alert variant="destructive">
+                      <AlertTitle>Vulnerable Endpoints</AlertTitle>
+                      <AlertDescription>
+                        <ul className="list-disc pl-4 mt-2">
+                          {results.xss.endpoints.map((endpoint: string) => (
+                            <li key={endpoint}>{endpoint}</li>
+                          ))}
+                        </ul>
+                      </AlertDescription>
+                    </Alert>
+                  )}
               </CardContent>
             </Card>
 
@@ -224,18 +225,19 @@ export default function ReportPage() {
                       : "SQL injection vulnerabilities found"}
                   </span>
                 </div>
-                {results.sql.endpoints && results.sql.endpoints.length > 0 && (
-                  <Alert variant="destructive">
-                    <AlertTitle>Vulnerable Endpoints</AlertTitle>
-                    <AlertDescription>
-                      <ul className="list-disc pl-4 mt-2">
-                        {results.sql.endpoints.map((endpoint: string) => (
-                          <li key={endpoint}>{endpoint}</li>
-                        ))}
-                      </ul>
-                    </AlertDescription>
-                  </Alert>
-                )}
+                {results.sql.endpoints &&
+                  results.sql.endpoints.length > 0 && (
+                    <Alert variant="destructive">
+                      <AlertTitle>Vulnerable Endpoints</AlertTitle>
+                      <AlertDescription>
+                        <ul className="list-disc pl-4 mt-2">
+                          {results.sql.endpoints.map((endpoint: string) => (
+                            <li key={endpoint}>{endpoint}</li>
+                          ))}
+                        </ul>
+                      </AlertDescription>
+                    </Alert>
+                  )}
               </CardContent>
             </Card>
           </div>
