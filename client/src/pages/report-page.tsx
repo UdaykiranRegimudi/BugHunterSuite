@@ -8,9 +8,9 @@ import { Shield, AlertTriangle, Check, X, Loader2, ArrowLeft } from "lucide-reac
 import { Link } from "wouter";
 
 export default function ReportPage() {
-  const { id } = useParams();
+  const params = useParams<{ id: string }>();
   const { data: scan, isLoading } = useQuery<Scan>({
-    queryKey: [`/api/scans/${id}`],
+    queryKey: [`/api/scans/${params.id}`],
   });
 
   if (isLoading) {
@@ -23,7 +23,7 @@ export default function ReportPage() {
 
   if (!scan) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center p-4">
         <Alert variant="destructive" className="w-full max-w-md">
           <AlertTriangle className="h-4 w-4" />
           <AlertTitle>Error</AlertTitle>
@@ -53,7 +53,7 @@ export default function ReportPage() {
             Target: {scan.url}
           </p>
           <p className="text-sm text-muted-foreground">
-            Scan started: {new Date(scan.createdAt).toLocaleString()}
+            Scan started: {new Date(scan.createdAt!).toLocaleString()}
           </p>
         </div>
 
@@ -86,7 +86,7 @@ export default function ReportPage() {
                       : "SSL configuration issues found"}
                   </span>
                 </div>
-                {results.ssl.issues.length > 0 && (
+                {results.ssl.issues && results.ssl.issues.length > 0 && (
                   <Alert variant="destructive">
                     <AlertTitle>Issues Found</AlertTitle>
                     <AlertDescription>
@@ -121,7 +121,7 @@ export default function ReportPage() {
                       : "Missing security headers"}
                   </span>
                 </div>
-                {results.headers.missing.length > 0 && (
+                {results.headers.missing && results.headers.missing.length > 0 && (
                   <Alert variant="destructive">
                     <AlertTitle>Missing Headers</AlertTitle>
                     <AlertDescription>
@@ -156,7 +156,7 @@ export default function ReportPage() {
                       : "XSS vulnerabilities found"}
                   </span>
                 </div>
-                {results.xss.endpoints.length > 0 && (
+                {results.xss.endpoints && results.xss.endpoints.length > 0 && (
                   <Alert variant="destructive">
                     <AlertTitle>Vulnerable Endpoints</AlertTitle>
                     <AlertDescription>
@@ -191,7 +191,7 @@ export default function ReportPage() {
                       : "SQL injection vulnerabilities found"}
                   </span>
                 </div>
-                {results.sql.endpoints.length > 0 && (
+                {results.sql.endpoints && results.sql.endpoints.length > 0 && (
                   <Alert variant="destructive">
                     <AlertTitle>Vulnerable Endpoints</AlertTitle>
                     <AlertDescription>

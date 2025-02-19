@@ -51,11 +51,11 @@ export default function HomePage() {
               <div className="space-y-4">
                 {scans.map((scan) => (
                   <Link key={scan.id} href={`/report/${scan.id}`}>
-                    <a className="block p-4 rounded-lg border bg-card hover:bg-accent transition-colors">
+                    <div className="block p-4 rounded-lg border bg-card hover:bg-accent transition-colors cursor-pointer">
                       <div className="flex items-center justify-between mb-2">
                         <span className="font-medium truncate">{scan.url}</span>
                         <span className="text-sm text-muted-foreground">
-                          {new Date(scan.createdAt).toLocaleDateString()}
+                          {new Date(scan.createdAt!).toLocaleDateString()}
                         </span>
                       </div>
                       <div className="flex items-center gap-2">
@@ -71,7 +71,7 @@ export default function HomePage() {
                           {scan.status}
                         </span>
                       </div>
-                    </a>
+                    </div>
                   </Link>
                 ))}
               </div>
